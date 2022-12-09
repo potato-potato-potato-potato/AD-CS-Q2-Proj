@@ -22,6 +22,7 @@ public class World implements Loadable {
         map.add(new MyHashTable<Coordinate, Object>());
         map.add(new MyHashTable<Coordinate, Object>());
         map.add(new MyHashTable<Coordinate, Object>());
+        placeEntity(1, 8, 11);
     }
 
     public boolean place(Tile tile, int layer, int x, int y) {
@@ -30,7 +31,27 @@ public class World implements Loadable {
 
     public boolean place(Tile tile, int layer, Coordinate p) {
         MyHashTable<Coordinate, Object> grid = map.get(layer);
-        grid.put(p, tile);
+        grid.put(p, tile, 0);
+        return true;
+    }
+
+    public boolean placeL(int layer, int levle) {
+        MyHashTable<Coordinate, Object> grid = map.get(layer);
+        for (int i = 0; i < X_GRID_MAX; i++) {
+            for (int j = 0; j < Y_GRID_MAX; j++) {
+                grid.put(new Coordinate(i, j), new Water());
+            }
+        }
+        return true;
+    }
+
+    public boolean placeEntity(int layer, int x, int y) {
+        return placeEntity(layer, new Coordinate(x, y));
+    }
+
+    public boolean placeEntity(int layer, Coordinate p) {
+        MyHashTable<Coordinate, Object> grid = map.get(layer);
+        grid.put(new Coordinate(p.x, p.y), new Player());
         return true;
     }
 
@@ -59,24 +80,28 @@ public class World implements Loadable {
 
     public Tile getTranslatedTile(int layer, Coordinate p, int xTranslate, int yTranslate) {
         MyHashTable<Coordinate, Object> grid = map.get(layer);
-        return (Tile) grid.get(new Coordinate(p.x + xTranslate, p.y + yTranslate)).get(1);
+        System.out.println("x: " + p.x + " y: " + p.y + " xT: " + xTranslate + " yT: " + yTranslate);
+        return (Tile) grid.get(new Coordinate(p.x + xTranslate, p.y + yTranslate)).get(0);
     }
 
     public void recalculateGrassWater(int layer) {
+        System.out.println("recalculating grass water");
         MyHashTable<Coordinate, Object> grid = map.get(1);
         for (int i = 0; i < X_GRID_MAX; i++) {
             for (int j = 0; j < Y_GRID_MAX; j++) {
-                if ((Tile) grid.get(new Coordinate(i, j)).get(1) instanceof GrassWater)
+                if ((Tile) grid.get(new Coordinate(i, j)).get(0) instanceof GrassWater)
                     place(new Grass(), layer, i, j);
             }
         }
 
-        for (int i = 0; i < X_GRID_MAX; i++) {
-            for (int j = 0; j < Y_GRID_MAX; j++) {
-                if (!((Tile) grid.get(new Coordinate(i, j)).get(1) instanceof Grass))
+        for (int i = 2; i < X_GRID_MAX; i++) {
+            for (int j = 2; j < Y_GRID_MAX; j++) {
+                if (!((Tile) grid.get(new Coordinate(i, j)).get(0) instanceof Grass))
                     continue;
+                System.out.println("grass found at " + i + " " + j);
                 int dir = 0;
                 Coordinate p = new Coordinate(i, j);
+                System.out.println("grass found at " + p.x + " " + p.y);
 
                 if (getTranslatedTile(layer, p, 1, 0).getId() == 1 && getTranslatedTile(layer, p, 0, 1).getId() == 1)
                     dir = 4;
@@ -162,11 +187,20 @@ public class World implements Loadable {
 
     public void draw(Graphics g) {
         MyHashTable<Coordinate, Object> grid = map.get(1);
-        System.out.println(grid);
+
         for (int i = 0; i < X_GRID_MAX; i++) {
             for (int j = 0; j < Y_GRID_MAX; j++) {
                 if (grid.get(new Coordinate(i, j)) != null) {
-                    ((Tile) grid.get(new Coordinate(i, j)).get(0)).draw(g, i * TILE_SIZE - p.x, j * TILE_SIZE - p.y);
+                    try {
+                        ((Tile) grid.get(new Coordinate(i, j)).get(0)).draw(g, i * TILE_SIZE - p.x,
+                                j * TILE_SIZE - p.y);
+                        if ((Tile) grid.get(new Coordinate(i, j)).get(1) != null)
+                            ((Tile) grid.get(new Coordinate(i, j)).get(1)).draw(g, i * TILE_SIZE - p.x,
+                                    j * TILE_SIZE - p.y);
+                    } catch (Exception e) {
+                        System.out.println("Error drawing tile at " + i + ", " + j);
+                    }
+
                 }
 
             }

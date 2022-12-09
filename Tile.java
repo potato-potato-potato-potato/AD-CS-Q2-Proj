@@ -14,8 +14,11 @@ public abstract class Tile implements Loadable {
     }
 
     public void draw(Graphics g, int x, int y) {
-        if (texture == null)
+        if (texture == null) {
+            System.out.println("Texture is null");
             return;
+        }
+
         g.drawImage(texture, x, y, null);
     }
 

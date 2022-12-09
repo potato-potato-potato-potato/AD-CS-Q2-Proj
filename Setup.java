@@ -5,6 +5,7 @@ public class Setup {
     }
 
     private static void setupLandscape(World world) {
+        world.placeL(1, 0);
 
         for (int i = 0; i < World.X_GRID_MAX; i++) {
             for (int j = 0; j < World.Y_GRID_MAX; j++) {

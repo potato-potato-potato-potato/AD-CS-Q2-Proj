@@ -166,17 +166,17 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             Point movement = new Point(0, 0);
 
             if (Input.keyboard[87] || Input.keyboard[38]) {
-                movement.translate(0, -1); // {W} Key
+                movement.translate(0, -Player.PLAYER_SPEED); // {W} Key
                 System.out.println("w");
             }
 
             if (Input.keyboard[65] || Input.keyboard[37])
-                movement.translate(-1, 0); // {A} Key
+                movement.translate(-Player.PLAYER_SPEED, 0); // {A} Key
             System.out.println();
             if (Input.keyboard[83] || Input.keyboard[40])
-                movement.translate(0, 1); // {S} Key
+                movement.translate(0, Player.PLAYER_SPEED); // {S} Key
             if (Input.keyboard[68] || Input.keyboard[39])
-                movement.translate(1, 0); // {D} Key
+                movement.translate(Player.PLAYER_SPEED, 0); // {D} Key
             // boolean playerMoved = false;
             temp.translate(movement.x, movement.y);
             world.temp(temp);

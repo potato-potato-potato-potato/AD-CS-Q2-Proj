@@ -17,7 +17,7 @@ public class Coordinate extends Point {
 
     @Override
     public int hashCode() {
-        return x * 1000 + y;
+        return x * 100 + y;
     }
 
 }

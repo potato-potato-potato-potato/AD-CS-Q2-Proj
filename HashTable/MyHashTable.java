@@ -38,6 +38,7 @@ public class MyHashTable<K, V> {
 
     public DLList<V> get(K key) {
         int index = key.hashCode() % table.length;
+
         return table[index];
     }
 
