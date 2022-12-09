@@ -8,7 +8,9 @@ import javax.swing.JPanel;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.List;
+import java.lang.Exception;
 
 import java.awt.*;
 
@@ -26,6 +28,8 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
+    public Point temp = new Point(0, 0);
+
     public Screen() {
         this.setLayout(null);
 
@@ -37,7 +41,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         // addKeyListener(ui);
 
         world = new World();
-        // world.load();
+        world.load();
 
         loadStart();
 
@@ -51,6 +55,14 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
     @Override
     public Dimension getPreferredSize() {
         return SCREEN_SIZE;
+    }
+
+    public Screen getScreen() {
+        return this;
+    }
+
+    public Point temp() {
+        return temp;
     }
 
     // load all start
@@ -128,7 +140,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         if (currentState == 1) {
             g.drawImage(startScreen, 0, 0, 800, 600, null);
         } else if (currentState == 2) {
-            // world.draw(g);
+            world.draw(g);
         } else if (currentState == 3) {
             g.drawImage(controls, 0, 0, 800, 600, null);
         }
@@ -143,103 +155,36 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         drawCurrent(g);
     }
 
-    // public void animate() {
-    // while (true) {
-    // try {
-    // Thread.sleep(6);
-    // } catch (InterruptedException ex) {
-    // Thread.currentThread().interrupt();
-    // }
-    // // r key
-    // if (Input.keyboard[82]) {
-    // if (currentState == 3) {
-    // currentState = 2;
-    // } else {
-    // currentState = 3;
-    // }
-    // try {
-    // Thread.sleep(100);
-    // } catch (InterruptedException ex) {
-    // Thread.currentThread().interrupt();
-    // }
-    // }
+    public void animate() {
+        while (true) {
+            try {
+                Thread.sleep(6);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
 
-    // List<Quest> quests = world.getPlayer().getQuests();
-    // for (int i = 0; i < quests.size(); i++) {
-    // Quest quest = quests.get(i);
-    // if (quest.getState() == Quest.DONE)
-    // continue;
-    // if (quest.checkCompleted(world.getPlayer()) == true) {
-    // quest.setState(Quest.COMPLETE);
-    // }
-    // }
+            Point movement = new Point(0, 0);
 
-    // Point playerChunk =
-    // World.getChunkCoordinateFromFreeCoordinate(world.getPlayer().getOffsetCoordinates());
-    // Point playerCoordinates = world.getPlayer().getOffsetCoordinates();
+            if (Input.keyboard[87] || Input.keyboard[38]) {
+                movement.translate(0, -1); // {W} Key
+                System.out.println("w");
+            }
 
-    // Point movement = new Point(0, 0);
+            if (Input.keyboard[65] || Input.keyboard[37])
+                movement.translate(-1, 0); // {A} Key
+            System.out.println();
+            if (Input.keyboard[83] || Input.keyboard[40])
+                movement.translate(0, 1); // {S} Key
+            if (Input.keyboard[68] || Input.keyboard[39])
+                movement.translate(1, 0); // {D} Key
+            // boolean playerMoved = false;
+            temp.translate(movement.x, movement.y);
+            world.temp(temp);
 
-    // if (Input.keyboard[87] || Input.keyboard[38])
-    // movement.translate(0, -Player.PLAYER_SPEED); // {W} Key
-    // if (Input.keyboard[65] || Input.keyboard[37])
-    // movement.translate(-Player.PLAYER_SPEED, 0); // {A} Key
-    // if (Input.keyboard[83] || Input.keyboard[40])
-    // movement.translate(0, Player.PLAYER_SPEED); // {S} Key
-    // if (Input.keyboard[68] || Input.keyboard[39])
-    // movement.translate(Player.PLAYER_SPEED, 0); // {D} Key
-    // boolean playerMoved = false;
+            repaint();
+        }
 
-    // if (world.getPlayer().isInboat == false) {
-    // boolean nextHorizontalTileIsPassable = world.getTilePassable(World
-    // .getChunkCoordinateFromFreeCoordinate(playerCoordinates.x + movement.x,
-    // playerCoordinates.y));
-    // if (nextHorizontalTileIsPassable) {
-    // world.getPlayer().coordinates.translate(movement.x, 0);
-    // playerMoved = true;
-    // }
-
-    // boolean nextVerticalTileIsPassable = world
-    // .getTilePassable(World.getChunkCoordinateFromFreeCoordinate(playerCoordinates.x,
-    // playerCoordinates.y + movement.y));
-    // if (nextVerticalTileIsPassable) {
-    // world.getPlayer().coordinates.translate(0, movement.y);
-    // playerMoved = true;
-    // }
-    // }
-
-    // if (world.getPlayer().isInboat == true) {
-    // world.getBoat().getCoordinates().move(world.getPlayer().coordinates.x,
-    // world.getPlayer().coordinates.y);
-
-    // // boolean nextHorizontalTileIsPassable = world.getTilePassable(World
-    // // .getChunkCoordinateFromFreeCoordinate(playerCoordinates.x + movement.x,
-    // // playerCoordinates.y));
-    // boolean nextHorizontalTileIsPassable = world.getTileWater(World
-    // .getChunkCoordinateFromFreeCoordinate(playerCoordinates.x + movement.x,
-    // playerCoordinates.y));
-
-    // if (nextHorizontalTileIsPassable) {
-    // world.getPlayer().coordinates.translate(movement.x, 0);
-    // playerMoved = true;
-    // }
-
-    // boolean nextVerticalTileIsPassable = world
-    // .getTileWater(World.getChunkCoordinateFromFreeCoordinate(playerCoordinates.x,
-    // playerCoordinates.y + movement.y));
-    // if (nextVerticalTileIsPassable) {
-    // world.getPlayer().coordinates.translate(0, movement.y);
-    // playerMoved = true;
-    // }
-
-    // }
-
-    // world.getEntities().resetLayer(world.getPlayer());
-    // world.getEntities().resetLayer(world.getBoat());
-
-    // repaint();
-    // }
-    // }
+    }
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {

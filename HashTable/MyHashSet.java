@@ -25,6 +25,7 @@ public class MyHashSet<E> {
 
     public boolean contains(Object obj) {
         int location = obj.hashCode() % hashTable.length;
+        // System.out.println("location: " + location);
         return (hashTable[location] != null);
     }
 
