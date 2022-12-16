@@ -28,7 +28,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
-    public Point temp = new Point(300, 300);
+    public Point temp = new Point(320, 320);
 
     private boolean cooldown = false;
 
@@ -204,7 +204,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
                 }
 
             } else if (i >= COOLDOWN_TIME) {
-                // TODO set the player to the new tile
+                // TODO set the fd to the new tile
                 cooldown = false;
                 i = 0;
                 direction = 4;

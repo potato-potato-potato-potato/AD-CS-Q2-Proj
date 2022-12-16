@@ -13,6 +13,7 @@ public class World implements Loadable {
     public static final int X_GRID_MAX = 100, Y_GRID_MAX = 100;
     public static final int TILE_SIZE = 64;
     private boolean canEdit = false;
+    private Coordinate player;
 
     // this is used to discided which map to draw
     public DLList<MyHashTable<Coordinate, Object>> map;
@@ -23,6 +24,8 @@ public class World implements Loadable {
         map.add(new MyHashTable<Coordinate, Object>());
         map.add(new MyHashTable<Coordinate, Object>());
         placeEntity(1, 8, 11);
+        p
+
     }
 
     public boolean place(Tile tile, int layer, int x, int y) {
@@ -51,7 +54,7 @@ public class World implements Loadable {
 
     public boolean placeEntity(int layer, Coordinate p) {
         MyHashTable<Coordinate, Object> grid = map.get(layer);
-        grid.put(new Coordinate(p.x, p.y), new Player());
+        grid.put(new Coordinate(5, 5), new Player(new Coordinate(5, 5)));
         return true;
     }
 
@@ -178,11 +181,15 @@ public class World implements Loadable {
         return getTileWater(chunk.x, chunk.y, layer);
     }
 
+    public Coordinate getPlayerLocation() {
+        return new Coordinate(5, 5);
+    }
+
     public Point p = new Point(0, 0);
 
     public void temp(Point temp) {
         p = temp;
-        // System.out.println(p);
+        System.out.println(p);
     }
 
     public void draw(Graphics g) {
@@ -194,9 +201,6 @@ public class World implements Loadable {
                     try {
                         ((Tile) grid.get(new Coordinate(i, j)).get(0)).draw(g, i * TILE_SIZE - p.x,
                                 j * TILE_SIZE - p.y);
-                        if ((Tile) grid.get(new Coordinate(i, j)).get(1) != null)
-                            ((Tile) grid.get(new Coordinate(i, j)).get(1)).draw(g, i * TILE_SIZE - p.x,
-                                    j * TILE_SIZE - p.y);
                     } catch (Exception e) {
                         System.out.println("Error drawing tile at " + i + ", " + j);
                     }
@@ -205,6 +209,13 @@ public class World implements Loadable {
 
             }
 
+        }
+        try {
+            Player play = (Player) grid.get(getPlayerLocation()).get(1);
+            play.draw(g, p);
+        } catch (Exception e) {
+            System.out.println("Error drawing player");
+            System.out.println(e);
         }
 
     }
