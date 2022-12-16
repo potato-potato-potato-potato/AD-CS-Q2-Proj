@@ -55,10 +55,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         addKeyListener(this);
         Input.addListeners(this); // Mouse/Keyboard listener
 
-        move.start();
+        // movement();
 
-        // Thread t1 = new Thread(new Animate(this));
-        // t1.start();
+        Thread t1 = new Thread(new Animate(this));
+        t1.start();
     }
 
     @Override
@@ -164,123 +164,88 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         drawCurrent(g);
     }
 
-    public void animate() {
+    int i = 0;
+
+    public void movement() {
         while (true) {
             try {
-                Thread.sleep(6);
+                Thread.sleep(4);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-
-            if (Input.keyboard[87] || Input.keyboard[38])
-                moveUp();// {W} Key
-            if (Input.keyboard[65] || Input.keyboard[37])
-                moveLeft(); // {A} Key
-            if (Input.keyboard[83] || Input.keyboard[40])
-                moveDown(); // {S} Key
-            if (Input.keyboard[68] || Input.keyboard[39])
-                moveRight(); // {D} Key
-            // boolean playerMoved = false;
-
-            // System.out.println(coolDowntThread.isAlive());
-            // System.out.println(move.isAlive());
-
-            repaint();
-        }
-
-    }
-
-    // Thread coolDowntThread = new Thread(() -> {
-    // try {
-    // while (true) {
-    // Thread.sleep(COOLDOWN_TIME);
-    // direction = 4;
-    // }
-    // } catch (InterruptedException ex) {
-    // Thread.currentThread().interrupt();
-    // }
-    // });
-
-    Thread move = new Thread(() -> {
-        try {
-            while (true) {
-                Thread.sleep(4);
-                if (direction == 0) {
-                    temp.translate(1, 0);
+            // System.out.println("cooldown: " + i);
+            if (!cooldown) {
+                if (Input.keyboard[87] || Input.keyboard[38])
+                    moveDirection(2); // {W} Key
+                if (Input.keyboard[65] || Input.keyboard[37])
+                    moveDirection(1); // {A} Key
+                if (Input.keyboard[83] || Input.keyboard[40])
+                    moveDirection(3); // {S} Key
+                if (Input.keyboard[68] || Input.keyboard[39])
+                    moveDirection(0); // {D} Key
+            }
+            // Documention
+            // 0 = right
+            // 1 = left
+            // 2 = up
+            // 3 = down
+            if (cooldown && i < COOLDOWN_TIME) {
+                i += 4;
+                if (direction == 4) {
+                    break;
                 } else if (direction == 1) {
                     temp.translate(-1, 0);
                 } else if (direction == 2) {
                     temp.translate(0, -1);
                 } else if (direction == 3) {
                     temp.translate(0, 1);
-                } else if (direction == 4) {
-                    temp.translate(0, 0);
+                } else if (direction == 0) {
+                    temp.translate(1, 0);
                 }
-                world.temp(temp);
-            }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-    });
 
+            } else if (i >= COOLDOWN_TIME) {
+                // TODO set the player to the new tile
+                cooldown = false;
+                i = 0;
+                direction = 4;
+            }
+            world.temp(temp);
+        }
+
+    }
+
+    public void moveDirection(int dir) {
+        direction = dir;
+        cooldown = true;
+
+    }
+
+    @Deprecated
     public void moveUp() {
+        direction = 2;
+        cooldown = true;
 
-        if (!cooldown) {
-            cooldown = true;
-
-            direction = 0;
-
-            try {
-                Thread.sleep(COOLDOWN_TIME);
-                direction = 4;
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-
-        }
     }
 
+    @Deprecated
     public void moveDown() {
-        if (!cooldown) {
-            cooldown = true;
+        direction = 3;
+        cooldown = true;
 
-            direction = 1;
-            try {
-                Thread.sleep(COOLDOWN_TIME);
-                direction = 4;
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 
+    @Deprecated
     public void moveLeft() {
-        if (!cooldown) {
-            cooldown = true;
-
-            direction = 2;
-            try {
-                Thread.sleep(COOLDOWN_TIME);
-                direction = 4;
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
+        direction = 1;
+        cooldown = true;
 
     }
 
+    @Deprecated
     public void moveRight() {
-        if (!cooldown) {
-            cooldown = true;
+        direction = 0;
+        cooldown = true;
 
-            direction = 3;
-            try {
-                Thread.sleep(COOLDOWN_TIME);
-                direction = 4;
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 
     @Override

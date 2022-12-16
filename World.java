@@ -182,7 +182,7 @@ public class World implements Loadable {
 
     public void temp(Point temp) {
         p = temp;
-        System.out.println(p);
+        // System.out.println(p);
     }
 
     public void draw(Graphics g) {

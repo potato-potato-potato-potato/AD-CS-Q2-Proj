@@ -19,7 +19,7 @@ public class Runner {
         frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 3 - frame.getSize().height / 2);
         frame.setVisible(true);
 
-        sc.animate();
+        sc.movement();
 
     }
 }
