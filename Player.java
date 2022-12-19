@@ -19,8 +19,8 @@ public class Player implements Loadable {
 	private Dimension size = new Dimension(64, 97);
 	private Coordinate coordinates;
 
-	public Player(Coordinate coordinates) {
-		this.coordinates = coordinates;
+	public Player() {
+		// this.coordinates = coordinates;
 
 		load();
 	}
@@ -29,8 +29,8 @@ public class Player implements Loadable {
 		this.isInboat = isInboat;
 	}
 
-	public void draw(Graphics g, Point screenLocation) {
-		g.drawImage(sprite, 400 - size.width / 2, 300 - size.height / 2, size.width, size.height, null);
+	public void draw(Graphics g) {
+		g.drawImage(sprite, (400 - size.width / 2) + 15, (300 - size.height / 2) + 15, size.width, size.height, null);
 
 	}
 

@@ -23,8 +23,6 @@ public class World implements Loadable {
         map.add(new MyHashTable<Coordinate, Object>());
         map.add(new MyHashTable<Coordinate, Object>());
         map.add(new MyHashTable<Coordinate, Object>());
-        placeEntity(1, 8, 11);
-        p
 
     }
 
@@ -38,24 +36,24 @@ public class World implements Loadable {
         return true;
     }
 
-    public boolean placeL(int layer, int levle) {
+    public boolean placeL(int layer, int levle, Object obj) {
         MyHashTable<Coordinate, Object> grid = map.get(layer);
         for (int i = 0; i < X_GRID_MAX; i++) {
             for (int j = 0; j < Y_GRID_MAX; j++) {
-                grid.put(new Coordinate(i, j), new Water());
+                grid.put(new Coordinate(i, j), obj);
             }
         }
         return true;
     }
 
-    public boolean placeEntity(int layer, int x, int y) {
-        return placeEntity(layer, new Coordinate(x, y));
+    public void placeEntity(int layer, int x, int y, Object entity) {
+        placeEntity(layer, new Coordinate(x, y), entity);
     }
 
-    public boolean placeEntity(int layer, Coordinate p) {
+    public void placeEntity(int layer, Coordinate pos, Object entity) {
         MyHashTable<Coordinate, Object> grid = map.get(layer);
-        grid.put(new Coordinate(5, 5), new Player(new Coordinate(5, 5)));
-        return true;
+        grid.put(pos, entity);
+
     }
 
     // TODO implement tile groups and tile memeber
@@ -189,12 +187,17 @@ public class World implements Loadable {
 
     public void temp(Point temp) {
         p = temp;
-        System.out.println(p);
+        // System.out.println(p);
     }
 
     public void draw(Graphics g) {
-        MyHashTable<Coordinate, Object> grid = map.get(1);
+        drawLand(g);
+        drawEntity(g);
 
+    }
+
+    public void drawLand(Graphics g) {
+        MyHashTable<Coordinate, Object> grid = map.get(1);
         for (int i = 0; i < X_GRID_MAX; i++) {
             for (int j = 0; j < Y_GRID_MAX; j++) {
                 if (grid.get(new Coordinate(i, j)) != null) {
@@ -210,14 +213,27 @@ public class World implements Loadable {
             }
 
         }
-        try {
-            Player play = (Player) grid.get(getPlayerLocation()).get(1);
-            play.draw(g, p);
-        } catch (Exception e) {
-            System.out.println("Error drawing player");
-            System.out.println(e);
-        }
+    }
 
+    public void drawEntity(Graphics g) {
+        MyHashTable<Coordinate, Object> grid = map.get(1);
+        for (int i = 0; i < X_GRID_MAX; i++) {
+            for (int j = 0; j < Y_GRID_MAX; j++) {
+
+                if (grid.get(new Coordinate(i, j)).size() >= 2) {
+                    try {
+                        System.out.println(grid.get(getChunkCoordinateFromFreeCoordinate(p.x, p.y)).get(0));
+                        ((Player) grid.get(new Coordinate(i, j)).get(1)).draw(g);
+                    } catch (Exception e) {
+                        System.out.println("Error drawing Entity at " + i + ", " + j);
+                        System.out.println(e);
+                    }
+
+                }
+
+            }
+
+        }
     }
 
     public void load() {

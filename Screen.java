@@ -28,7 +28,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
-    public Point temp = new Point(320, 320);
+    public Point temp = new Point(0, 0);
 
     private boolean cooldown = false;
 

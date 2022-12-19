@@ -5,7 +5,7 @@ public class Setup {
     }
 
     private static void setupLandscape(World world) {
-        world.placeL(1, 0);
+        world.placeL(1, 0, new Water());
 
         for (int i = 0; i < World.X_GRID_MAX; i++) {
             for (int j = 0; j < World.Y_GRID_MAX; j++) {
@@ -454,5 +454,7 @@ public class Setup {
 
     public static void setupW(World world) {
         setupLandscape(world);
+        world.placeEntity(1, 8, 11, new Player());
+
     }
 }

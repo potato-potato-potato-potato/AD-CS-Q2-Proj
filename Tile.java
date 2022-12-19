@@ -19,7 +19,7 @@ public abstract class Tile implements Loadable {
             return;
         }
 
-        g.drawImage(texture, x, y, null);
+        g.drawImage(texture, x + 385, y + 285, null);
     }
 
     public int getId() {
@@ -33,4 +33,5 @@ public abstract class Tile implements Loadable {
     public void setPassable(boolean passable) {
         this.passable = passable;
     }
+
 }
