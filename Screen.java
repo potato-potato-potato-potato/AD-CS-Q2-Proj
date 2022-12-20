@@ -28,13 +28,13 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
-    public Point temp = new Point(0, 0);
+    public Point playerPos = new Point(512, 704);
 
-    private boolean cooldown = false;
+    public static boolean cooldown = false;
 
-    private int COOLDOWN_TIME = 256;
+    public static final int COOLDOWN_TIME = 256;
 
-    private int direction = 4;
+    public int direction = 4;
 
     public Screen() {
         this.setLayout(null);
@@ -51,6 +51,8 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
         loadStart();
 
+        world.playerPos(playerPos);
+
         addMouseListener(this);
         addKeyListener(this);
         Input.addListeners(this); // Mouse/Keyboard listener
@@ -59,6 +61,8 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
         Thread t1 = new Thread(new Animate(this));
         t1.start();
+        Thread t2 = new Thread(new Movement(this));
+        t2.start();
     }
 
     @Override
@@ -68,10 +72,6 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     public Screen getScreen() {
         return this;
-    }
-
-    public Point temp() {
-        return temp;
     }
 
     // load all start
@@ -164,6 +164,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         drawCurrent(g);
     }
 
+    public World getWorld() {
+        return world;
+    }
+
     int i = 0;
 
     public void movement() {
@@ -177,30 +181,33 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             if (!cooldown) {
                 if (Input.keyboard[87] || Input.keyboard[38])
                     moveDirection(2); // {W} Key
-                if (Input.keyboard[65] || Input.keyboard[37])
+                else if (Input.keyboard[65] || Input.keyboard[37])
                     moveDirection(1); // {A} Key
-                if (Input.keyboard[83] || Input.keyboard[40])
+                else if (Input.keyboard[83] || Input.keyboard[40])
                     moveDirection(3); // {S} Key
-                if (Input.keyboard[68] || Input.keyboard[39])
+                else if (Input.keyboard[68] || Input.keyboard[39])
                     moveDirection(0); // {D} Key
             }
-            // Documention
+
+            // documentation
             // 0 = right
             // 1 = left
             // 2 = up
             // 3 = down
+            // 4 = none
+
             if (cooldown && i < COOLDOWN_TIME) {
                 i += 4;
                 if (direction == 4) {
                     break;
                 } else if (direction == 1) {
-                    temp.translate(-1, 0);
+                    playerPos.translate(-1 * Player.PLAYER_SPEED, 0);
                 } else if (direction == 2) {
-                    temp.translate(0, -1);
+                    playerPos.translate(0, -1 * Player.PLAYER_SPEED);
                 } else if (direction == 3) {
-                    temp.translate(0, 1);
+                    playerPos.translate(0, 1 * Player.PLAYER_SPEED);
                 } else if (direction == 0) {
-                    temp.translate(1, 0);
+                    playerPos.translate(1 * Player.PLAYER_SPEED, 0);
                 }
 
             } else if (i >= COOLDOWN_TIME) {
@@ -209,14 +216,52 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
                 i = 0;
                 direction = 4;
             }
-            world.temp(temp);
+            world.playerPos(playerPos);
         }
 
     }
 
     public void moveDirection(int dir) {
-        direction = dir;
-        cooldown = true;
+
+        if (dir == 0) {
+            if (world.getTilePassable(
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x + World.TILE_SIZE, playerPos.y))) {
+                world.entityMove(dir, Player.playerCoordinate);
+                Player.translateCoordinates(1, 0);
+                direction = dir;
+                cooldown = true;
+
+            }
+
+        } else if (dir == 1) {
+            if (world.getTilePassable(
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x - World.TILE_SIZE, playerPos.y))) {
+                world.entityMove(dir, Player.playerCoordinate);
+                Player.translateCoordinates(-1, 0);
+                direction = dir;
+                cooldown = true;
+
+            }
+
+        } else if (dir == 2) {
+            if (world.getTilePassable(
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y - World.TILE_SIZE))) {
+                world.entityMove(dir, Player.playerCoordinate);
+                Player.translateCoordinates(0, -1);
+                direction = dir;
+                cooldown = true;
+
+            }
+        } else if (dir == 3) {
+            if (world.getTilePassable(
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y + World.TILE_SIZE))) {
+                world.entityMove(dir, Player.playerCoordinate);
+                Player.translateCoordinates(0, 1);
+                direction = dir;
+                cooldown = true;
+
+            }
+        }
 
     }
 
@@ -320,4 +365,5 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
     public void mouseExited(MouseEvent mouseEvent) {
 
     }
+
 }

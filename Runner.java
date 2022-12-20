@@ -18,8 +18,11 @@ public class Runner {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 3 - frame.getSize().height / 2);
         frame.setVisible(true);
-
-        sc.movement();
+        // sc.movement();
+        Animate animate = new Animate(sc);
+        animate.run();
+        Movement mv = new Movement(sc);
+        mv.run();
 
     }
 }

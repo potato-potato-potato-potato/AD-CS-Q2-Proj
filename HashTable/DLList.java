@@ -71,6 +71,9 @@ public class DLList<E> {
     }
 
     public void remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
         Node<E> current = head.next();
         for (int i = 0; i < index; i++) {
             current = current.next();

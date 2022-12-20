@@ -65,8 +65,8 @@ public class MyHashSet<E> {
     }
 
     @SuppressWarnings("unchecked")
-    public DLList<E> toDLList() {
-        DLList<E> ret = new DLList<E>();
+    public MyArrayList<E> toArrayList() {
+        MyArrayList<E> ret = new MyArrayList<E>();
         for (int i = 0; i < hashTable.length; i++) {
             if (hashTable[i] != null) {
                 ret.add((E) hashTable[i]);

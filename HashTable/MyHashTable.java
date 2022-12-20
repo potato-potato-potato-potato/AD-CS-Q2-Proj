@@ -2,12 +2,12 @@ package HashTable;
 
 public class MyHashTable<K, V> {
     private MyHashSet<K> keySet;
-    private DLList<V>[] table;
+    private MyArrayList<V>[] table;
 
     @SuppressWarnings("unchecked")
     public MyHashTable() {
         keySet = new MyHashSet<K>();
-        table = new DLList[10000];
+        table = new MyArrayList[10000];
     }
 
     public void put(K key, V value) {
@@ -17,28 +17,27 @@ public class MyHashTable<K, V> {
         } else {
             keySet.add(key);
             int index = key.hashCode() % table.length;
-            table[index] = new DLList<V>();
+            table[index] = new MyArrayList<V>();
             table[index].add(value);
         }
 
     }
 
-    public void put(K key, V value, int pos) {
+    public void put(K key, V value, int Arrayindex) {
         if (keySet.contains(key)) {
             int index = key.hashCode() % table.length;
-            table[index].set(pos, value);
+            table[index].set(Arrayindex, value);
         } else {
             keySet.add(key);
             int index = key.hashCode() % table.length;
-            table[index] = new DLList<V>();
-            table[index].add(pos, value);
+            table[index] = new MyArrayList<V>();
+            table[index].set(Arrayindex, value);
         }
 
     }
 
-    public DLList<V> get(K key) {
+    public MyArrayList<V> get(K key) {
         int index = key.hashCode() % table.length;
-
         return table[index];
     }
 
@@ -54,6 +53,14 @@ public class MyHashTable<K, V> {
         }
     }
 
+    public void remove(K key, int index) {
+        if (table[key.hashCode() % table.length] == null) {
+            remove(key);
+        } else {
+            table[key.hashCode() % table.length].remove(index);
+        }
+    }
+
     public void remove(K key) {
         int index = key.hashCode() % table.length;
         table[index] = null;
@@ -62,7 +69,7 @@ public class MyHashTable<K, V> {
 
     public String toString() {
         String ret = "";
-        DLList<K> keyList = keySet.toDLList();
+        MyArrayList<K> keyList = keySet.toArrayList();
         for (int i = 0; i < keyList.size(); i++) {
             ret += "bucket :" + keyList.get(i).hashCode() % table.length + " " + keyList.get(i).toString() + "\n";
         }
