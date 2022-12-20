@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import HashTable.*;
 import java.awt.Point;
 
-public class Player implements Loadable {
+public class Player extends Entity implements Loadable {
 
 	public boolean isInboat = false;
 	protected Image sprite;
@@ -18,11 +18,14 @@ public class Player implements Loadable {
 	public static int PLAYER_SPEED = 1;
 	private int frames;
 	private static final Point PLAYER_DRAW_OFFSET = new Point(20, -15);
-	public static Coordinate playerCoordinate = new Coordinate(8, 11);
+	public static Coordinate playerCoordinate = new Coordinate(15, 11);
 	private MyHashTable<Integer, Image> animationFrames;
 	public static int direction;
+	public static int coinage = 9;
+	public static final int ID = 0;
 
 	public Player(Coordinate playerCoordinate) {
+		super(playerCoordinate, true);
 		Player.playerCoordinate = playerCoordinate;
 		thread1.start();
 		animationFrames = new MyHashTable<Integer, Image>();
@@ -64,7 +67,8 @@ public class Player implements Loadable {
 		frames = f;
 	}
 
-	public void draw(Graphics g) {
+	@Override
+	public void draw(Graphics g, Coordinate p) {
 		int currentFrame = frames;
 
 		if (Input.keyboard[87] || Input.keyboard[38]) { // W, Up Arrow
@@ -82,12 +86,13 @@ public class Player implements Loadable {
 		} else { // If nothing's happening, play idle animation
 			sprite = animationFrames.get(5).get(direction);
 		}
+		// System.out.println(coinage);
 		g.drawImage(sprite, (400 - size.width / 2) + PLAYER_DRAW_OFFSET.x,
 				(300 - size.height / 2) + PLAYER_DRAW_OFFSET.y, size.width, size.height, null);
 
 	}
 
-	public static Coordinate getCoordinates() {
+	public Coordinate getCoordinates() {
 		return playerCoordinate;
 	}
 
@@ -115,6 +120,22 @@ public class Player implements Loadable {
 				break;
 		}
 		return playerCoordinate;
+	}
+
+	public int getID() {
+		return ID;
+	}
+
+	public static int getCoinage() {
+		return coinage;
+	}
+
+	public static void addCoinage(int coinage) {
+		Player.coinage += coinage;
+	}
+
+	public static void removeCoinage(int coinage) {
+		Player.coinage -= coinage;
 	}
 
 	@Override

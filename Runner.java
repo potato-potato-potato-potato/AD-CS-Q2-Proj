@@ -23,6 +23,7 @@ public class Runner {
         animate.run();
         Movement mv = new Movement(sc);
         mv.run();
+        sc.repaint();
 
     }
 }

@@ -28,7 +28,7 @@ public class World implements Loadable {
     public MyHashTable<Coordinate, Object> map;
 
     public World() {
-
+        map = new MyHashTable<Coordinate, Object>();
     }
 
     public boolean place(Tile tile, int x, int y) {
@@ -38,6 +38,16 @@ public class World implements Loadable {
     public boolean place(Tile tile, Coordinate p) {
         MyHashTable<Coordinate, Object> grid = map;
         grid.put(p, tile, World.TILE);
+        return true;
+    }
+
+    public boolean placeTileEntity(TileEntity te, int x, int y) {
+        return placeTileEntity(te, new Coordinate(x, y));
+    }
+
+    public boolean placeTileEntity(TileEntity te, Coordinate p) {
+        MyHashTable<Coordinate, Object> grid = map;
+        grid.put(p, te, World.MAP_ENTITY);
         return true;
     }
 
@@ -88,7 +98,8 @@ public class World implements Loadable {
 
     public Tile getTranslatedTile(Coordinate p, int xTranslate, int yTranslate) {
         MyHashTable<Coordinate, Object> grid = map;
-        System.out.println("x: " + p.x + " y: " + p.y + " xT: " + xTranslate + " yT: " + yTranslate);
+        // System.out.println("x: " + p.x + " y: " + p.y + " xT: " + xTranslate + " yT:
+        // " + yTranslate);
         return (Tile) grid.get(new Coordinate(p.x + xTranslate, p.y + yTranslate)).get(World.TILE);
     }
 
@@ -106,10 +117,10 @@ public class World implements Loadable {
             for (int j = 2; j < Y_GRID_MAX; j++) {
                 if (!((Tile) grid.get(new Coordinate(i, j)).get(World.TILE) instanceof Grass))
                     continue;
-                System.out.println("grass found at " + i + " " + j);
+                // System.out.println("grass found at " + i + " " + j);
                 int dir = 0;
                 Coordinate p = new Coordinate(i, j);
-                System.out.println("grass found at " + p.x + " " + p.y);
+                // System.out.println("grass found at " + p.x + " " + p.y);
 
                 if (getTranslatedTile(p, 1, 0).getId() == 1 && getTranslatedTile(p, 0, 1).getId() == 1)
                     dir = 4;
@@ -216,12 +227,38 @@ public class World implements Loadable {
         Tile t = (Tile) tile.get(World.TILE);
         if (t.passable) {
             MyArrayList<Object> movingToTile = getTile(pos);
+            if (tile.get(World.MAP_ENTITY) != null && movingToTile.get(World.ENTITY) instanceof Player) {
+                tile.remove(World.MAP_ENTITY);
+                ((Player) movingToTile.get(World.ENTITY)).addCoinage(1);
+            }
             tile.set(World.ENTITY, movingToTile.get(World.ENTITY));
             movingToTile.remove(World.ENTITY);
             System.out.println(pos + " " + movingToTile);
             System.out.println(tile);
 
         }
+    }
+
+    public void entityinteract(int x, int y) {
+        entityinteract(new Coordinate(x, y));
+    }
+
+    public void entityinteract(Coordinate pos) {
+        System.out.println("intact at: " + pos + " dir: " + Player.direction + "");
+        Entity e;
+        if (Player.direction == 1 && getAdjacentTile(2, pos).get(World.ENTITY) != null) {
+            e = (Entity) getAdjacentTile(2, pos).get(World.ENTITY);
+        } else if (Player.direction == 2 && getAdjacentTile(3, pos).get(World.ENTITY) != null) {
+            e = (Entity) getAdjacentTile(3, pos).get(World.ENTITY);
+        } else if (Player.direction == 3 && getAdjacentTile(1, pos).get(World.ENTITY) != null) {
+            e = (Entity) getAdjacentTile(1, pos).get(World.ENTITY);
+        } else if (Player.direction == 4 && getAdjacentTile(0, pos).get(World.ENTITY) != null) {
+            e = (Entity) getAdjacentTile(0, pos).get(World.ENTITY);
+        } else {
+            return;
+        }
+        e.interact();
+
     }
 
     // TODO implement water before using this
@@ -239,7 +276,7 @@ public class World implements Loadable {
         return new Coordinate(5, 5);
     }
 
-    public Point playerPos = new Point(0, 0);
+    public static Point playerPos = new Point(0, 0);
 
     public void playerPos(Point playerPos) {
         this.playerPos = playerPos;
@@ -249,7 +286,7 @@ public class World implements Loadable {
     public void draw(Graphics g) {
         drawLand(g);
         drawEntity(g);
-
+        drawTileEntity(g);
     }
 
     public void drawLand(Graphics g) {
@@ -277,12 +314,42 @@ public class World implements Loadable {
         MyHashTable<Coordinate, Object> grid = map;
         for (int i = 0; i < X_GRID_MAX; i++) {
             for (int j = 0; j < Y_GRID_MAX; j++) {
-
-                if (grid.get(new Coordinate(i, j)).size() >= 2) {
+                if (grid.get(new Coordinate(i, j)).get(World.ENTITY) != null) {
                     try {
+                        //
                         // System.out.println(grid.get(getChunkCoordinateFromFreeCoordinate(playerPos.x,
                         // playerPos.y)));
-                        ((Player) grid.get(new Coordinate(i, j)).get(World.ENTITY)).draw(g);
+
+                        ((Entity) grid.get(new Coordinate(i, j)).get(World.ENTITY)).draw(g,
+                                new Coordinate(i * TILE_SIZE - playerPos.x, j * TILE_SIZE - playerPos.y));
+                        // System.out.println("calling drawing entity at " + (i * TILE_SIZE -
+                        // playerPos.x) + ", "
+                        // + (j * TILE_SIZE - playerPos.y));
+                    } catch (Exception e) {
+                        System.out.println("Error drawing Entity at " + i + ", " + j);
+                        System.out.println(e);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void drawTileEntity(Graphics g) {
+        MyHashTable<Coordinate, Object> grid = map;
+        for (int i = 0; i < X_GRID_MAX; i++) {
+            for (int j = 0; j < Y_GRID_MAX; j++) {
+                if (grid.get(new Coordinate(i, j)).get(World.MAP_ENTITY) != null) {
+                    try {
+
+                        ((TileEntity) grid.get(new Coordinate(i, j)).get(World.MAP_ENTITY)).draw(g,
+                                new Coordinate(i * TILE_SIZE - playerPos.x, j * TILE_SIZE - playerPos.y));
+                        // System.out.println("calling drawing entity at " + (i * TILE_SIZE -
+                        // playerPos.x) + ", "
+                        // + (j * TILE_SIZE - playerPos.y));
                     } catch (Exception e) {
                         System.out.println("Error drawing Entity at " + i + ", " + j);
                         System.out.println(e);

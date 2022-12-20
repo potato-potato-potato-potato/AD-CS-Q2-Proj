@@ -28,7 +28,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
-    public Point playerPos = new Point(512, 704);
+    public Point playerPos = new Point(2944, 2048);
 
     public static boolean cooldown = false;
 
@@ -225,7 +225,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
         if (dir == 0) {
             if (world.getTilePassable(
-                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x + World.TILE_SIZE, playerPos.y))) {
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x + World.TILE_SIZE, playerPos.y))
+                    && world.getTile(
+                            World.getChunkCoordinateFromFreeCoordinate(playerPos.x + World.TILE_SIZE, playerPos.y))
+                            .get(World.ENTITY) == null) {
                 world.entityMove(dir, Player.playerCoordinate);
                 Player.translateCoordinates(1, 0);
                 direction = dir;
@@ -235,7 +238,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
         } else if (dir == 1) {
             if (world.getTilePassable(
-                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x - World.TILE_SIZE, playerPos.y))) {
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x - World.TILE_SIZE, playerPos.y))
+                    && world.getTile(
+                            World.getChunkCoordinateFromFreeCoordinate(playerPos.x - World.TILE_SIZE, playerPos.y))
+                            .get(World.ENTITY) == null) {
                 world.entityMove(dir, Player.playerCoordinate);
                 Player.translateCoordinates(-1, 0);
                 direction = dir;
@@ -245,7 +251,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
         } else if (dir == 2) {
             if (world.getTilePassable(
-                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y - World.TILE_SIZE))) {
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y - World.TILE_SIZE))
+                    && world.getTile(
+                            World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y - World.TILE_SIZE))
+                            .get(World.ENTITY) == null) {
                 world.entityMove(dir, Player.playerCoordinate);
                 Player.translateCoordinates(0, -1);
                 direction = dir;
@@ -254,7 +263,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             }
         } else if (dir == 3) {
             if (world.getTilePassable(
-                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y + World.TILE_SIZE))) {
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y + World.TILE_SIZE))
+                    && world.getTile(
+                            World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y + World.TILE_SIZE))
+                            .get(World.ENTITY) == null) {
                 world.entityMove(dir, Player.playerCoordinate);
                 Player.translateCoordinates(0, 1);
                 direction = dir;
@@ -301,30 +313,17 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
     //
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        // if (debug) {
-        // if (keyEvent.getKeyCode() == 69) {
-        // Tile[][] grid = world.gridLayers.get(0);
-        // for (int i = 0; i < grid.length; i++) {
-        // for (int j = 0; j < grid[i].length; j++) {
-        // if (grid[i][j] instanceof Grass || grid[i][j] instanceof GrassWater) {
-        // System.out.println("world.place(new Grass(), " + i + ", " + j + ");");
-        // }
-        // }
-        // }
-        // }
-        // }
 
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-        // Entity closestInteractableEntity =
-        // world.getPlayer().getClosestInteractableEntity(world.getEntities());
-        // if (closestInteractableEntity != null && keyEvent.getKeyCode() == 69) {
-        // Interactable closestInteractable = (Interactable) closestInteractableEntity;
-        // closestInteractable.interact(ui, world, world.getPlayer(),
-        // world.getEntities());
-        // }
+        if (keyEvent.getKeyCode() == 69) {
+            world.getAdjacentTile(Player.direction - 1,
+                    World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y));
+            world.entityinteract(World.getChunkCoordinateFromFreeCoordinate(playerPos.x, playerPos.y));
+
+        }
     }
 
     @Override
