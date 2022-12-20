@@ -23,12 +23,14 @@ public class World implements Loadable {
     private boolean canEdit = false;
     private Coordinate player;
     public static final int TILE = 0, MAP_TILE = 1, MAP_ENTITY = 2, ENTITY = 3;
+    CoinCounter coinCounter;
 
     // this is used to discided which map to draw
     public MyHashTable<Coordinate, Object> map;
 
     public World() {
         map = new MyHashTable<Coordinate, Object>();
+        coinCounter = new CoinCounter();
     }
 
     public boolean place(Tile tile, int x, int y) {
@@ -287,6 +289,7 @@ public class World implements Loadable {
         drawLand(g);
         drawEntity(g);
         drawTileEntity(g);
+        drawOvelay(g);
     }
 
     public void drawLand(Graphics g) {
@@ -360,6 +363,10 @@ public class World implements Loadable {
             }
 
         }
+    }
+
+    private void drawOvelay(Graphics g) {
+        coinCounter.draw(g, X_GRID_MAX, ENTITY);
     }
 
     public void load() {
