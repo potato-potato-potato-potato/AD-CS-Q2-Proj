@@ -11,6 +11,12 @@ import java.io.IOException;
 import java.security.PublicKey;
 import java.util.List;
 import java.lang.Exception;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileReader;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import java.awt.*;
 
@@ -28,7 +34,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     private boolean debug = false;
 
-    public Point playerPos = new Point(2944, 2048);
+    public static Point playerPos = new Point(2944, 2048);
 
     public static boolean cooldown = false;
 
@@ -41,6 +47,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
     private Thread t3;
 
     public int direction = 4;
+
+    public static boolean win = false;
+
+    public boolean audioplayed = false;
 
     public Screen() {
         this.setLayout(null);
@@ -69,7 +79,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         t1.start();
         Thread t2 = new Thread(new Movement(this));
         t2.start();
-        t3 = new Thread(new Chase(this));
+        // t3 = new Thread(new Chase(this));
     }
 
     @Override
@@ -159,6 +169,35 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             world.draw(g);
         } else if (currentState == 3) {
             g.drawImage(controls, 0, 0, 800, 600, null);
+        } else if (currentState == 4) {
+            g.setColor(Color.WHITE);
+            g.drawRect(0, 0, 800, 600);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+            g.setColor(Color.BLACK);
+            g.drawString("You win", 400, 300);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            playAudio();
+
+        }
+    }
+
+    public void playAudio() {
+        if (!audioplayed) {
+            try {
+                AudioInputStream audioInputStream = AudioSystem
+                        .getAudioInputStream(getClass().getResourceAsStream("/Q4-assets/audio/tadaa-47995.wav"));
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
+                System.out.println("Playing sound file asfasdf");
+            } catch (Exception e) {
+                System.out.println("Error playing sound file: " + e);
+            }
+            audioplayed = true;
         }
     }
 
@@ -197,6 +236,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
                     moveDirection(0); // {D} Key
             }
 
+            if (win) {
+                currentState = 4;
+            }
+
             // documentation
             // 0 = right
             // 1 = left
@@ -225,11 +268,11 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
                 direction = 4;
             }
             world.playerPos(playerPos);
-            if (chasestartingtime >= 5000 && !t3.isAlive()) {
-                world.setChaseLocation(new Coordinate(48, 32));
-                System.out.println("chase started");
-                t3.start();
-            }
+            // if (chasestartingtime >= 5000 && !t3.isAlive()) {
+            // world.setChaseLocation(new Coordinate(48, 32));
+            // System.out.println("chase started");
+            // t3.start();
+            // }
         }
 
     }
@@ -288,6 +331,13 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             }
         }
 
+    }
+
+    public int saveOnExit() {
+        System.out.println("You win!");
+        Setup.saveGame(world);
+        System.exit(0);
+        return 0;
     }
 
     @Deprecated
@@ -378,8 +428,8 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     }
 
-    public void chase() {
-        world.chase();
-    }
+    // public void chase() {
+    // world.chase();
+    // }
 
 }

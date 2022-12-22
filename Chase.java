@@ -10,9 +10,9 @@ public class Chase implements Runnable {
 
     public void run() {
         while (true) {
-            screen.chase();
+            // screen.chase();
             try {
-                Thread.sleep(64);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

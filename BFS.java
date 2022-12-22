@@ -15,9 +15,11 @@ public class BFS {
     // Direction vectors
     static int dRow[] = { -1, 0, 1, 0 };
     static int dCol[] = { 0, 1, 0, -1 };
+    private int backUpGrid[][] = new int[ROW][COL];;
 
     public BFS(World world, boolean[][] vis, int npc_pos[], int player_pos[]) {
-        setUpGrid(world);
+        grid = setUpGrid(world);
+        backUpGrid = grid.clone();
         this.vis = vis;
         BFS.npc_pos = npc_pos;
         BFS.player_pos = player_pos;
@@ -34,7 +36,7 @@ public class BFS {
         }
     }
 
-    public void setUpGrid(World world) {
+    public int[][] setUpGrid(World world) {
         int ret[][] = new int[ROW][COL];
         for (int i = 0; i < ret.length; i++) {
             for (int j = 0; j < ret[i].length; j++) {
@@ -47,7 +49,7 @@ public class BFS {
             }
         }
         gridSet = true;
-        grid = ret;
+        return ret;
     }
 
     private boolean isValid(boolean vis[][], int row, int col) {
@@ -132,7 +134,8 @@ public class BFS {
         ArrayList<Integer[]> path = new ArrayList<>();
         int i = player_pos[1];
         int j = player_pos[0];
-
+        // System.out.println("alskdjhflkashjdflaksgjdf");
+        // System.out.println(grid[i][j]);
         while (i != npc_pos[1] || j != npc_pos[0]) {
 
             Integer[] pos = new Integer[2];
@@ -149,7 +152,8 @@ public class BFS {
                     // Skip if location is invalid or blocked
                     if (grid[i + dRow[k]][j + dCol[k]] == 1)
                         continue;
-
+                    if (grid[i + dRow[k]][j + dCol[k]] == 0 && (i + dRow[k] != npc_pos[1] || j + dCol[k] != npc_pos[0]))
+                        continue;
                     if (grid[i + dRow[k]][j + dCol[k]] <= min) {
                         // System.out.println("i: " + (i + dRow[k]) + " j: " + (j + dCol[k]));
                         min = grid[i + dRow[k]][j + dCol[k]];
@@ -164,15 +168,43 @@ public class BFS {
         return path;
     }
 
-    public void bfs() {
-        System.out.println("BFS");
-        // print the grid
+    public void show_path() {
+        ArrayList<Integer[]> path = get_path();
+        for (int i = 0; i < path.size(); i++) {
+            Integer[] pos = path.get(i);
+            grid[pos[0]][pos[1]] = 3;
+        }
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
-                System.out.print(vis[i][j] + " ");
+                if (grid[i][j] != 0 && grid[i][j] != 1 && grid[i][j] != 3)
+                    grid[i][j] = 4;
             }
-            System.out.println();
+
         }
+    }
+
+    public void upDatePos(Coordinate player, Coordinate npc) {
+        npc_pos[0] = npc.x;
+        npc_pos[1] = npc.y;
+        player_pos[0] = player.x;
+        player_pos[1] = player.y;
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                vis[i][j] = false;
+            }
+        }
+        grid = backUpGrid;
+    }
+
+    public void bfs() {
+        System.out.println("BFS");
+        // // print the grid
+        // for (int i = 0; i < ROW; i++) {
+        // for (int j = 0; j < COL; j++) {
+        // System.out.print(vis[i][j] + " ");
+        // }
+        // System.out.println();
+        // }
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
                 System.out.print(grid[i][j] + " ");

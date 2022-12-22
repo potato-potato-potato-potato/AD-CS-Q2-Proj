@@ -1,7 +1,13 @@
 import load.Loadable;
 
 import java.awt.*;
+
 import java.awt.image.ImageObserver;
+import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public abstract class Entity implements Loadable {
 
@@ -10,7 +16,7 @@ public abstract class Entity implements Loadable {
     protected Image texture;
     protected final Point coordinates;
     protected String dialogue = "if you see this something is wrong"; // this is used to store the dialogue for the npc
-    public int npcState; // this is used to determine what the npc should do
+    private int npcState;
 
     public Entity(Point coordinates, Dimension size) {
         this.coordinates = coordinates;
@@ -45,16 +51,39 @@ public abstract class Entity implements Loadable {
         return coordinates;
     }
 
+    public int getNpcState() {
+        return npcState;
+    }
+
+    public void setNpcState(int npcState) {
+        this.npcState = npcState;
+    }
+
     public void interact() {
         if (npcState == 0) {
-            npcState = 1;
+            try {
+                AudioInputStream audioInputStream = AudioSystem
+                        .getAudioInputStream(getClass().getResourceAsStream("/Q4-assets/audio/se1.wav"));
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
+                System.out.println("Playing sound file");
+            } catch (Exception e) {
+                System.out.println("Error playing sound file: " + e);
+            }
+        } else {
+            try {
+                AudioInputStream audioInputStream = AudioSystem
+                        .getAudioInputStream(getClass().getResourceAsStream("/Q4-assets/audio/beep-2.wav"));
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
+                System.out.println("Playing sound file");
+            } catch (Exception e) {
+                System.out.println("Error playing sound file: " + e);
+            }
         }
-        if (npcState == 1) {
-            // remove coine from player
-            // give player power up
 
-            npcState = 2;
-        }
     }
 
     public Point getOffsetCoordinates() {
