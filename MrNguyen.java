@@ -25,7 +25,7 @@ public class MrNguyen extends Entity implements Loadable {
         npc_pos[0] = x;
         npc_pos[1] = y;
         player_pos[0] = Player.playerCoordinate.x;
-        player_pos[1] = Player.playerCoordinate.x;
+        player_pos[1] = Player.playerCoordinate.y;
 
     }
 
@@ -35,10 +35,10 @@ public class MrNguyen extends Entity implements Loadable {
         load();
         npc_pos = new int[2];
         player_pos = new int[2];
-        npc_pos[0] = position.x;
-        npc_pos[1] = position.y;
-        player_pos[0] = Player.playerCoordinate.x;
-        player_pos[1] = Player.playerCoordinate.x;
+        npc_pos[0] = 46;
+        npc_pos[1] = 27;
+        player_pos[1] = 43;
+        player_pos[0] = 27;
         bfs = new BFS(world, vis, npc_pos, player_pos);
 
     }
@@ -49,6 +49,8 @@ public class MrNguyen extends Entity implements Loadable {
 
         bfs.bfs();
         bfs.search_path();
+        bfs.bfs();
+        bfs.show_path();
         bfs.bfs();
         // ArrayList<Integer[]> path = bfs.get_path();
         // System.out.println(path);
@@ -70,8 +72,8 @@ public class MrNguyen extends Entity implements Loadable {
     }
 
     public void setCoordinates(Coordinate co) {
-        bfs.updatePlayerPos(Player.playerCoordinate.x, Player.playerCoordinate.y);
-        bfs.updateNPCPos(co.x, co.y);
+        // bfs.updatePlayerPos(Player.playerCoordinate.x, Player.playerCoordinate.y);
+        // bfs.updateNPCPos(co.x, co.y);
         coordinates.x = co.x;
         coordinates.y = co.y;
     }

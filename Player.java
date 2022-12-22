@@ -18,7 +18,7 @@ public class Player extends Entity implements Loadable {
 	public static int PLAYER_SPEED = 1;
 	private int frames;
 	private static final Point PLAYER_DRAW_OFFSET = new Point(20, -15);
-	public static Coordinate playerCoordinate = new Coordinate(15, 11);
+	public static Coordinate playerCoordinate;
 	private MyHashTable<Integer, Image> animationFrames;
 	public static int direction;
 	public static int coinage = 9;

@@ -132,7 +132,8 @@ public class BFS {
         ArrayList<Integer[]> path = new ArrayList<>();
         int i = player_pos[1];
         int j = player_pos[0];
-
+        System.out.println("alskdjhflkashjdflaksgjdf");
+        System.out.println(grid[i][j]);
         while (i != npc_pos[1] || j != npc_pos[0]) {
 
             Integer[] pos = new Integer[2];
@@ -149,7 +150,8 @@ public class BFS {
                     // Skip if location is invalid or blocked
                     if (grid[i + dRow[k]][j + dCol[k]] == 1)
                         continue;
-
+                    if (grid[i + dRow[k]][j + dCol[k]] == 0 && (i + dRow[k] != npc_pos[1] || j + dCol[k] != npc_pos[0]))
+                        continue;
                     if (grid[i + dRow[k]][j + dCol[k]] <= min) {
                         // System.out.println("i: " + (i + dRow[k]) + " j: " + (j + dCol[k]));
                         min = grid[i + dRow[k]][j + dCol[k]];
@@ -164,15 +166,30 @@ public class BFS {
         return path;
     }
 
-    public void updatePlayerPos(int x, int y) {
-        player_pos[1] = x;
-        player_pos[0] = y;
+    public void show_path() {
+        ArrayList<Integer[]> path = get_path();
+        for (int i = 0; i < path.size(); i++) {
+            Integer[] pos = path.get(i);
+            grid[pos[0]][pos[1]] = 3;
+        }
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                if (grid[i][j] != 0 && grid[i][j] != 1 && grid[i][j] != 3)
+                    grid[i][j] = 4;
+            }
+
+        }
     }
 
-    public void updateNPCPos(int x, int y) {
-        npc_pos[1] = x;
-        npc_pos[0] = y;
-    }
+    // public void updatePlayerPos(int x, int y) {
+    // player_pos[1] = x;
+    // player_pos[0] = y;
+    // }
+
+    // public void updateNPCPos(int x, int y) {
+    // npc_pos[1] = x;
+    // npc_pos[0] = y;
+    // }
 
     public void bfs() {
         System.out.println("BFS");
