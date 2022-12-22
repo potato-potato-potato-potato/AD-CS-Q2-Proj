@@ -32,7 +32,13 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
 
     public static boolean cooldown = false;
 
+    public static boolean gameOver;
+
     public static final int COOLDOWN_TIME = 256;
+
+    public static int chasestartingtime = 0;
+
+    private Thread t3;
 
     public int direction = 4;
 
@@ -63,6 +69,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
         t1.start();
         Thread t2 = new Thread(new Movement(this));
         t2.start();
+        t3 = new Thread(new Chase(this));
     }
 
     @Override
@@ -177,6 +184,7 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
+            chasestartingtime += 4;
             // System.out.println("cooldown: " + i);
             if (!cooldown) {
                 if (Input.keyboard[87] || Input.keyboard[38])
@@ -217,6 +225,11 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
                 direction = 4;
             }
             world.playerPos(playerPos);
+            if (chasestartingtime >= 5000 && !t3.isAlive()) {
+                world.setChaseLocation(new Coordinate(48, 32));
+                System.out.println("chase started");
+                t3.start();
+            }
         }
 
     }
@@ -363,6 +376,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener {
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
 
+    }
+
+    public void chase() {
+        world.chase();
     }
 
 }

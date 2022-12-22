@@ -6,6 +6,7 @@ import java.util.Random;
 public class Setup {
     public static int i;
     public static int j;
+    public static BFS bfs;
 
     private Setup() {
 
@@ -48,9 +49,10 @@ public class Setup {
             e.printStackTrace();
         }
 
+        world.recalculateGrassWater();
+
         world.placeTileEntity(new Coin(), 11, 14);
 
-        world.recalculateGrassWater();
         // Add after second world is done
         // world.recalculateGrassWater(2);
 
@@ -60,6 +62,7 @@ public class Setup {
         setupLandscape(world);
         world.placeEntity(46, 32, World.ENTITY, new Player(new Coordinate(46, 32)));
         world.placeEntity(46, 27, World.ENTITY, new DwaneTheWokJhonson(new Coordinate(46, 27)));
+        world.placeEntity(0, 0, World.CHASE, new MrNguyen(new Coordinate(0, 0), world));
 
     }
 }

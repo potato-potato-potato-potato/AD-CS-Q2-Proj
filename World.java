@@ -22,11 +22,11 @@ public class World implements Loadable {
     public static final int TILE_SIZE = 64;
     private boolean canEdit = false;
     private Coordinate player;
-    public static final int TILE = 0, MAP_TILE = 1, MAP_ENTITY = 2, ENTITY = 3;
-    CoinCounter coinCounter;
-
+    public static final int TILE = 0, MAP_TILE = 1, MAP_ENTITY = 2, ENTITY = 3, CHASE = 4;
+    public CoinCounter coinCounter;
+    public Coordinate chase = new Coordinate(0, 0);
     // this is used to discided which map to draw
-    public MyHashTable<Coordinate, Object> map;
+    public static MyHashTable<Coordinate, Object> map;
 
     public World() {
         map = new MyHashTable<Coordinate, Object>();
@@ -223,6 +223,20 @@ public class World implements Loadable {
         entityMove(direction, new Coordinate(x, y));
     }
 
+    public void setChaseLocation(Coordinate to) {
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++=");
+        MyArrayList<Object> current = getTile(chase);
+        MyArrayList<Object> tile = getTile(to);
+
+        if (tile.get(World.ENTITY) instanceof Player) {
+            Screen.gameOver = true;
+        }
+        tile.set(World.CHASE, current.get(World.CHASE));
+        current.remove(World.CHASE);
+        ((MrNguyen) tile.get(CHASE)).setCoordinates(to);
+        chase = to;
+    }
+
     public void entityMove(int direction, Coordinate pos) {
         MyArrayList<Object> tile = getAdjacentTile(direction, pos);
         // System.out.println(pos + " " + tile);
@@ -289,6 +303,7 @@ public class World implements Loadable {
         drawLand(g);
         drawEntity(g);
         drawTileEntity(g);
+        drawChace(g);
         drawOvelay(g);
     }
 
@@ -369,8 +384,37 @@ public class World implements Loadable {
         coinCounter.draw(g, X_GRID_MAX, ENTITY);
     }
 
+    private void drawChace(Graphics g) {
+        MyHashTable<Coordinate, Object> grid = map;
+
+        try {
+            // System.out.println(grid.get(chase));
+            // System.out.println(chase);
+            ((Entity) grid.get(chase).get(World.CHASE)).draw(g,
+                    new Coordinate(chase.x * TILE_SIZE - playerPos.x, chase.y * TILE_SIZE -
+                            playerPos.y));
+            // System.out.println("calling drawing entity at " + (i * TILE_SIZE -
+            // playerPos.x) + ", "
+            // + (j * TILE_SIZE - playerPos.y));
+        } catch (Exception e) {
+            System.out.println("Error drawing chaser at " + chase.x + ", " + chase.y);
+            System.out.println(e);
+        }
+
+    }
+
     public void load() {
         Setup.setupW(this);
+    }
+
+    public void chase() {
+        MyArrayList<Object> current = getTile(chase);
+        ((MrNguyen) current.get(CHASE)).setCoordinates(chase);
+
+        MyArrayList<Integer[]> e = ((MrNguyen) map.get(chase).get(World.CHASE)).chasePath();
+        Coordinate to = new Coordinate(e.get(1)[0], e.get(0)[1]);
+        System.out.println(to);
+        setChaseLocation(to);
     }
 
 }

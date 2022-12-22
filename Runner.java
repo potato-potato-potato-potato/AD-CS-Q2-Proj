@@ -22,7 +22,9 @@ public class Runner {
         Animate animate = new Animate(sc);
         animate.run();
         Movement mv = new Movement(sc);
+        Chase chase = new Chase(sc);
         mv.run();
+        chase.run();
         sc.repaint();
 
     }

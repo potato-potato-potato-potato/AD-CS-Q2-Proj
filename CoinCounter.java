@@ -4,6 +4,7 @@ import java.awt.*;
 
 public class CoinCounter implements Loadable {
     private Image texture;
+    private Coordinate drawOffset = new Coordinate(100, 80);
 
     public CoinCounter() {
         load();
@@ -16,6 +17,10 @@ public class CoinCounter implements Loadable {
         }
 
         g.drawImage(texture, 0, 0, null);
+        g.setFont(new Font("Arial", Font.PLAIN, 50));
+        g.setColor(Color.BLACK);
+        g.drawString(Integer.toString((Integer) Player.coinage), (int) drawOffset.x, (int) drawOffset.y);
+        // System.out.println("Drawing coin counter: " + Player.coinage);
     }
 
     @Override
