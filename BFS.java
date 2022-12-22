@@ -164,16 +164,6 @@ public class BFS {
         return path;
     }
 
-    public void updatePlayerPos(int x, int y) {
-        player_pos[1] = x;
-        player_pos[0] = y;
-    }
-
-    public void updateNPCPos(int x, int y) {
-        npc_pos[1] = x;
-        npc_pos[0] = y;
-    }
-
     public void bfs() {
         System.out.println("BFS");
         // print the grid

@@ -69,7 +69,7 @@ public class MrNguyen extends Entity implements Loadable {
         coordinates.y = y;
     }
 
-    public void setCoordinates(Coordinate co) {
+    public void reCalculatePath(Coordinate playerPos, Coordinate npcPos) {
         bfs.updatePlayerPos(Player.playerCoordinate.x, Player.playerCoordinate.y);
         bfs.updateNPCPos(co.x, co.y);
         coordinates.x = co.x;
